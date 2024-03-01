@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if artists|length > 0 %}
+
+    {% if display_schedule == "on" %}
+
+        <div class="container mt-5">
+            <h2>Schedule</h2>
+
+            <div class="accordion my-3" id="schedule">
+                {% for date in dates %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading-{{ date.strftime('%A') }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ date.strftime('%A') }}" aria-expanded="false" aria-controls="{{ date.strftime('%A') }}">
+                                <span class="fs-3">{{ date.strftime('%A') }}</span>
+                            </button>
+                        </h2>
+                        <div id="{{ date.strftime('%A') }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ date.strftime('%A') }}">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    {% for stage in stages %}
+                                        {% if showtimes|selectattr("showtime_stage", "equalto", stage)|selectattr("showtime_day", "equalto", date.strftime('%A'))|list|length > 0 %}
+                                            <div class="stage-listing col-12 col-sm-6 col-lg-3 mb-3">    
+                                                <h4>{{ stage }} Stage</h4>
+                                                {% for showtime in showtimes %}
+                                                    {% if showtime.showtime_start.strftime('%A') == date.strftime('%A') %}
+                                                        {% if showtime.showtime_stage == stage %}
+                                                            {% if showtime.showtime_start == showtime.showtime_end %}
+                                                                <small>{{ showtime.showtime_start.strftime('%-I.%M%p')|lower }}</small>
+                                                            {% else %}
+                                                                <small>{{ showtime.showtime_start.strftime('%-I.%M%p')|lower }}-{{ showtime.showtime_end.strftime('%-I.%M%p')|lower }}</small>
+                                                            {% endif %}
+                                                            <p><a href="#{{ showtime.showtime_artist | replace(' ','') }}" class="link-dark">{{ showtime.showtime_artist }}</a></p>
+                                                        {% endif %}    
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    {% endif %}
+
+<div class="container mt-5" id="lineup-bios">
+
+    <h2>Artists</h2>
+
+    <div class="row">
+        {% for artist in artists %}
+            <div class="col-12 col-sm-4 col-lg-3">
+                <a href="#{{ artist.artist_name | replace(' ','') }}" class="link-dark">{{ artist.artist_name }}</a>
+            </div>
+        {% endfor %}
+    </div>
+
+        <div class="row masonry-row mt-4" >
+        {% for artist in artists %}
+            
+            <div id="{{ artist.artist_name | replace(' ','') }}" class="flip-card my-3 col-12 col-sm-6 col-lg-4">
+                <div class="flip-card-inner">    
+                    <div class="card flip-card-front">
+                        {% if artist.artist_img != "" %}
+                        <img src="{{ cloudinary_url }}{{ artist.artist_img }}" alt="{{ artist.artist_name }}" class="card-img-top">
+                        {% else %}
+                        <span class="card-img-top p-3"></span>
+                        {% endif %}
+                        <div class="card-body">
+                            <h3 class="card-title">{{ artist.artist_name }}</h3>
+                            <span class="fs-5">Click for biography <i class="bi bi-arrow-clockwise"></i></span>
+                        </div>
+                        <div class="card-footer">
+                            <!-- Show appearances if they exist-->
+                            {% if artist.show1_stage != "" or artist.show2_stage != "" or artist.show3_stage != ""  %}
+                                <div class="lineup-shows">
+                                    <strong>Appearing:</strong><br>
+                                    <ul>
+                                        {% if artist.show1_stage != "" %}
+                                            <li>{{ artist.show1_start.strftime('%A %-d %B') }} at {{ artist.show1_start.strftime('%-I.%M%p')|lower }} on the {{ artist.show1_stage|capitalize }} stage</li>
+                                        {% endif %}
+                                        {% if artist.show2_stage != "" %}
+                                            <li>{{ artist.show2_start.strftime('%A %-d %B') }} at {{ artist.show2_start.strftime('%-I.%M%p')|lower }} on the {{ artist.show2_stage|capitalize }} stage</li>
+                                        {% endif %}
+                                        {% if artist.show3_stage != "" %}
+                                            <li>{{ artist.show3_start.strftime('%A %-d %B') }} at {{ artist.show3_start.strftime('%-I.%M%p')|lower }} on the {{ artist.show3_stage|capitalize }} stage</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            <!-- Show website if it exists-->
+                            {% if artist.artist_url != "" %}
+                                <p class="lineup-url">
+                                    <strong>Elsewhere on the web:</strong><br>
+                                    <a href="{{ artist.artist_url }}" class="lineup-url text-dark" target="_blank">{{ artist.artist_name }}</a>
+                                </p>
+                            {% endif %}    
+                        </div>
+                    </div>
+                    <div class="card flip-card-back">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ artist.artist_name }}</h3>
+                            <div class="lineup-bio-text">
+                                {{ artist.artist_bio }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% else %}
+    <div class="container mt-5" id="lineup-empty">
+        <h2>Line-up in progress</h2>
+        <p class="fs-5 mt-3">We're busy behind the scenes creating something special! Follow us on social media to be the first to know when our line-up is revealed, or check back here soon.</p>         
+    </div>
+{% endif %}
+
+{% endblock %}

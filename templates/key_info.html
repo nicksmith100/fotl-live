@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="my-3 text-center">Key info</h2>
+
+<p class="text-center text-danger"><i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i> Ensure that the dates and stage names on this page are up-to-date before adding artists.</p>
+
+<form method="POST" action="{{ url_for('key_info') }}" enctype="multipart/form-data" class="w-75 mx-auto">
+    <fieldset>
+        <legend class="mt-2">Event info</legend>
+        <!-- If shows already exist, warn user -->
+        {% if shows_exist %}
+        <p class="text-danger"><i class="bi bi-exclamation-circle-fill" aria-hidden="true"></i> You have already added at least one show to the Artists database. Please note that any changes made to dates and stages on this page will <strong>not</strong> be automatically applied to exisiting shows.</p>
+        {% endif %}
+
+        <div class="mb-3">
+            <label for="event_start" class="form-label"><i class="bi bi-calendar-check" aria-hidden="true"></i> Start date<br></label>
+            {% if key_info.event_start.year != 1900 %}
+            <input id="event_start" name="event_start" value="{{ key_info.event_start.strftime('%d-%m-%Y') }}" class="validate form-control event-date">
+            {% else %}
+            <input id="event_start" name="event_start" class="validate form-control event-date">
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="event_end" class="form-label"><i class="bi bi-calendar-x" aria-hidden="true"></i> End date<br></label>
+            {% if key_info.event_end.year != 1900 %}
+            <input id="event_end" name="event_end" value="{{ key_info.event_end.strftime('%d-%m-%Y') }}" class="validate form-control event-date">
+            {% else %}
+            <input id="event_end" name="event_end" class="validate form-control event-date">
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="stages" class="form-label"><i class="bi bi-mic" aria-hidden="true"></i> Stages<br></label>
+            <small class="text-muted">(Names separated by commas)</small>
+            <input type="text" minlength="1" value="{{ key_info.stages|join(', ') }}" class="validate form-control" id="stages" name="stages">
+        </div>
+        <div class="mb-3 form-check form-switch">
+            <label class="form-check-label" for="display_schedule">Display schedule</label>
+            <small class="text-muted">(Toggles visibility of schedule on Line-up page)</small>
+            <input id="display_schedule" 
+            name="display_schedule"
+            class="validate form-control form-check-input bg-secondary border-dark focus-ring" 
+            type="checkbox" 
+            role="switch"
+            {% if key_info.display_schedule == "on" %} 
+                checked
+            {% endif %} >
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend class="mt-2">Website main image</legend>
+        <div class="mb-3">
+            <label for="main_img" class="form-label"><i class="bi bi-image" aria-hidden="true"></i> Image<br></label>
+            <input
+            type="file"
+            class="form-control"
+            id="main_img"
+            name="main_img"
+            accept="image/*"
+            > 
+            {% if key_info.main_img != "" %}
+            <img src="{{ cloudinary_url }}{{ key_info.main_img }}" class="w-50 mt-3" alt="Event image">
+            {% endif %}
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend class="mt-2">Homepage banner</legend>
+        <p class="text-muted">Display a key message on the website homepage</p>
+        <div class="mb-3">
+            
+            <label for="banner_heading" class="form-label"><i class="bi bi-card-heading" aria-hidden="true"></i> Banner heading<br></label>
+            <input type="text" minlength="1" maxlength="100" value="{{ key_info.banner_heading }}" class="validate form-control" id="banner_heading" name="banner_heading">
+        </div>
+        <div class="mb-3">
+            <label for="banner_text" class="form-label"><i class="bi bi-blockquote-left" aria-hidden="true"></i> Banner text<br></label>
+            <textarea minlength="10" maxlength="3000" rows="5" class="validate form-control" id="banner_text" name="banner_text">{{ key_info.banner_text }}</textarea>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend class="mt-2">Fundraising link</legend>
+        <p class="text-muted">Current link for donations</p>
+        <div class="mb-3">
+            <label for="fundraising_url" class="form-label"><i class="bi bi-currency-pound" aria-hidden="true"></i> Fundraising link<br></label>
+            <input type="url" minlength="1" maxlength="300" value="{{ key_info.fundraising_url }}" class="validate form-control" id="fundraising_url" name="fundraising_url">
+        </div>
+
+    </fieldset>
+    <div class="col-12 my-4">
+        <button type="submit" class="btn btn-dark"><i class="bi bi-floppy" aria-hidden="true"></i> Save changes</button>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-confirm"
+            data-bs-url="{{ url_for('delete_event') }}" data-bs-text="Are you sure? This action cannot be undone!"><i
+            class="bi bi-x-circle-fill" aria-hidden="true"></i> Delete event</button>
+        <p class="text-muted mt-3">Last edited by {{ key_info.last_edit_by }} on {{ key_info.last_edit_on }}</p>
+    </div>
+</form>
+
+{% endblock %}

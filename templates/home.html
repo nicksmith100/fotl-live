@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if key_info.main_img != "" %}
+<div id="hero-image-container" class="primary-image-container">
+    <img src="{{ cloudinary_url }}{{ key_info.main_img }}"
+        alt=""
+        class="img-fluid primary-image w-100" id="hero-image">
+    <div id="strapline-container" class="me-2 px-3 py-1 d-none d-sm-block">
+        <p id="strapline-text" class="fs-1">Innovative Folk for Innovative Folk</p>
+    </div>
+</div>
+{% endif %}
+
+<div class="container">
+    {% if key_info.banner_text != "" %}
+    <div class="row">
+        <div id="banner" class="border border-3 p-3 mt-5">
+            <h2 class="mt-2">{{ key_info.banner_heading }}</h2>
+            <p>{{ key_info.banner_text }}</p>
+        </div>
+    </div>
+    {% endif %}
+    {% if key_info.fundraising_url != "" %}
+    <div class="row">
+        <div id="support" class="mt-5">
+            <h2 >Support the Festival</h2>
+                <p>Folk On The Lawn is a not-for-profit festival run by volunteers, with all donations shared amongst the artists. We do not provide tickets in advance, but encourage donations in exchange for a wristband. Please click the button below to donate in advance!</p>
+                <a href="{{ key_info.fundraising_url }}" target="_blank" class="mb-3 btn btn-lg btn-dark">Donate</a>
+        </div>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div id="about" class="mt-4">
+            <h2>About</h2>
+            <p>Folk on the Lawn (FotL) is a volunteer-run festival which runs every 
+                year at the Abbey Mill, Tintern.</p>
+            <p>With no budget whatsoever, FotL relies on the good will of those 
+                involved - the artists, sound technicians, Abbey Mill staff, the good 
+                folk of Tintern and various other benefactors and supporters.
+            <p>Despite its modest size, FotL has featured a number of international 
+                artists and signed bands, in addition to the more local talent that 
+                has graced its stages. Folks continue to commit to FotL due to the 
+                beauty of the setting, the atmosphere of the event (very relaxed!) 
+                and the magnanimous hosting of the Abbey Mill management and staff.</p>
+            <p>We encourage rootsy, homespun, innovative and brave music, with a strong 
+                folk/roots/acoustic thread running through the whole festival. We would 
+                see the festival as the antithesis of and remedy for the X Factor, 
+                'tired folk' sort-of-thing.</p>
+        </div>
+    </div>
+    <div id="location" class="row my-4">
+        <h2>Location</h2>
+        <div class="col-12 col-sm-4 mb-3">
+            <!-- Embed map from Google Maps -->
+            <iframe title="Google map for Abbey Mill, Tintern" loading="lazy" class="map w-100 h-100" allowfullscreen 
+            src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJKd9-vwi_cUgRlpRZEciPurg&key={{ GOOGLE_MAPS_API_KEY }}">
+            </iframe>
+        </div>
+        <div class="col-12 col-sm-8">
+            <p>The Abbey Mill is located in the centre of Tintern on the A466 and is easily accessible from the M4, M48, M5 and M50 motorways. Tintern is only 6 miles from junction 2 of the M48.</p>
+            <p>Parking at Abbey Mill is extremely limited, and we ask that the main car park is reserved for equipment drop-off and pick-up, and for blue badge holders and less mobile visitors. (There is one designated disabled parking space.) The nearest public car park is the Lower Wireworks car park, which is free and can be accessed by taking the minor road alongside the Wild Hare (the old Royal George Hotel). There is also quite a bit of on-road parking nearby, as well as car parks at the village hall, The Anchor and Tintern Abbey (parking charges may apply).</p>
+        </div>
+    </div>  
+</div>
+{% endblock %}
