@@ -505,6 +505,7 @@ def add_artist():
                 "show3_stage": request.form.get("show3_stage"),
                 "show3_start": show3_start,
                 "show3_duration": request.form.get("show3_duration"),
+                "archived": request.form.get("archived"),
                 "last_edit_by": session["user"],
                 "last_edit_on": date,
             }
@@ -565,6 +566,7 @@ def edit_artist(artist_id):
                     "show3_stage": request.form.get("show3_stage"),
                     "show3_start": show3_start,
                     "show3_duration": request.form.get("show3_duration"),
+                    "archived": request.form.get("archived"),
                     "last_edit_by": session["user"],
                     "last_edit_on": date,
                 }
