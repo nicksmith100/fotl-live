@@ -16,8 +16,12 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 from bson.json_util import dumps, loads
+from io import StringIO
+from cloudinary.utils import cloudinary_url
 import cloudinary
 import cloudinary.uploader
+import json
+import requests
 
 if os.path.exists("env.py"):
     import env
@@ -638,11 +642,16 @@ def backup():
             artists = dumps(mongo.db.artists.find())
             key_info = dumps(mongo.db.key_info.find())
 
-            # Write data to json files
-            with open("data_backup/artists_bkup.json", "w") as file:
-                file.write(artists)
-            with open("data_backup/key_info_bkup.json", "w") as file:
-                file.write(key_info)
+            # Define string variables            
+            artists_str = json.dumps(artists)
+            key_info_str = json.dumps(key_info)
+
+            # Upload to Cloudinary as strings
+            cloudinary.uploader.upload(StringIO(artists_str), folder="database_backups", 
+                               public_id="artists_backup.txt", overwrite=True, resource_type="raw")
+            cloudinary.uploader.upload(StringIO(key_info_str), folder="database_backups",
+                               public_id="key_info_backup.txt", overwrite=True, resource_type="raw")
+            
             flash("Database successfully backed up")
             return redirect(url_for("superuser"))
 
@@ -668,24 +677,26 @@ def restore():
             artists = []
             key_info = []
 
-            # Read data from backup json files
-            with open("data_backup/artists_bkup.json", "r") as file:
-                artists = loads(file.read())
-            with open("data_backup/key_info_bkup.json", "r") as file:
-                key_info = loads(file.read())
+            artists_backup_url = cloudinary_url("database_backups/artists_backup.txt", resource_type="raw", secure=True)[0]
+            key_info_backup_url = cloudinary_url("database_backups/key_info_backup.txt", resource_type="raw", secure=True)[0]
 
-            # Write data to database
-            artists_db = mongo.db.artists
-            artists_db.drop()
-            for ndx, each_artist in enumerate(artists):
-                del artists[ndx]["_id"]
-                artists_db.insert_one(artists[ndx])
+            artists_response = requests.get(artists_backup_url)
+            key_info_response = requests.get(key_info_backup_url)
 
-            key_info_db = mongo.db.key_info
-            key_info_db.drop()
-            for ndx, each_info in enumerate(key_info):
-                del key_info[ndx]["_id"]
-                key_info_db.insert_one(key_info[ndx])
+            # Convert response content to JSON
+            artists_json = json.loads(artists_response.content)
+            key_info_json = json.loads(key_info_response.content)
+
+            # Convert JSON to BSON
+            artists_bson = loads(artists_json)
+            key_info_bson = loads(key_info_json)
+
+            # Write to database
+            for artist in artists_bson:
+                mongo.db.artists.replace_one({"_id": artist["_id"]}, artist, upsert=True)
+
+            for key_info in key_info_bson:
+                mongo.db.key_info.replace_one({"_id": key_info["_id"]}, key_info, upsert=True)
 
             flash("Database successfully restored from backup")
             return redirect(url_for("superuser"))
@@ -720,4 +731,4 @@ def internal_error(e):
 
 if __name__ == "__main__":
     app.run(host=os.environ.get("IP"), port=int(
-        os.environ.get("PORT")), debug=False)
+        os.environ.get("PORT")), debug=True)
