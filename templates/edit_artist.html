@@ -39,7 +39,7 @@
         {% endif %}
         <div class="mb-3">
             <label for="archived" class="form-label"><i class="bi bi-archive-fill" aria-hidden="true"></i> Archived</label>
-            <input type="checkbox" id="archived" name="archived" {% if artist.archived %}checked{% endif %}>
+            <input type="checkbox" id="archived" value="on" name="archived" {% if artist.archived %}checked{% endif %}>
         </div>
     </fieldset>
     <fieldset class="mt-3">

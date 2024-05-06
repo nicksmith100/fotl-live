@@ -459,10 +459,14 @@ def artists():
     # Check user is admin
     if "user" in session:
 
-        artists = list(mongo.db.artists.find().sort("artist_name"))
+        artists = list(mongo.db.artists.find({"archived": False}).sort("artist_name"))
+        archived_artists = list(mongo.db.artists.find({"archived": True}).sort("artist_name"))
 
-        return render_template("artists.html", artists=artists)
+        # Check for unarchived artists
+        has_unarchived = artists.count() > 0        
 
+        return render_template("artists.html", artists=artists, archived_artists=archived_artists, has_unarchived=has_unarchived)
+        
     else:
         abort(403)
 
@@ -505,7 +509,6 @@ def add_artist():
                 "show3_stage": request.form.get("show3_stage"),
                 "show3_start": show3_start,
                 "show3_duration": request.form.get("show3_duration"),
-                "archived": request.form.get("archived"),
                 "last_edit_by": session["user"],
                 "last_edit_on": date,
             }
@@ -550,7 +553,7 @@ def edit_artist(artist_id):
                     ) in ALLOWED_EXTENSIONS:
                 upload_result = cloudinary.uploader.upload(
                     artist_img)["public_id"]
-
+            
             edited_artist = {
                 "$set": {
                     "artist_name": request.form.get("artist_name"),
@@ -566,7 +569,7 @@ def edit_artist(artist_id):
                     "show3_stage": request.form.get("show3_stage"),
                     "show3_start": show3_start,
                     "show3_duration": request.form.get("show3_duration"),
-                    "archived": request.form.get("archived"),
+                    "archived": request.form.get("archived") == "on",
                     "last_edit_by": session["user"],
                     "last_edit_on": date,
                 }
@@ -615,6 +618,35 @@ def delete_all():
 
         mongo.db.artists.delete_many({})
         flash("All artists successfully deleted")
+        return redirect(url_for("artists"))
+
+    else:
+
+        abort(403)
+
+
+@app.route("/archive_all")
+def archive_all():
+    # Check user is admin
+    if "user" in session:
+
+        mongo.db.artists.update_many({}, {'$set': {'archived': True}})  # Update all artists
+        flash("All artists successfully archived")
+        return redirect(url_for("artists"))
+
+    else:
+        abort(403)
+
+
+@app.route("/restore_all")
+def restore_all():
+
+    # Check user is admin
+    if "user" in session:
+
+        # Update all archived artists, setting 'archived' to False
+        mongo.db.artists.update_many({"archived": True}, {"$set": {"archived": False}}) 
+        flash("All artists successfully restored")
         return redirect(url_for("artists"))
 
     else:
