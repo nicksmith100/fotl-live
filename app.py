@@ -95,8 +95,12 @@ def inject_content():
 @app.route("/")
 @app.route("/home")
 def home():
+
+    # Get applications_open value from database
+    applications_open = mongo.db.key_info.find_one()["applications_open"]
+
     GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
-    return render_template("home.html",
+    return render_template("home.html", applications_open=applications_open,
                            GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY)
 
 
@@ -383,6 +387,7 @@ def key_info():
                     "event_end": event_end,
                     "stages": stages_list,
                     "display_schedule": request.form.get("display_schedule"),
+                    "applications_open": request.form.get("applications_open"),
                     "main_img": upload_result,
                     "banner_heading": request.form.get("banner_heading"),
                     "banner_text": request.form.get("banner_text"),
@@ -463,7 +468,7 @@ def artists():
         archived_artists = list(mongo.db.artists.find({"archived": True}).sort("artist_name"))
 
         # Check for unarchived artists
-        has_unarchived = artists.count() > 0        
+        has_unarchived = len(artists) > 0        
 
         return render_template("artists.html", artists=artists, archived_artists=archived_artists, has_unarchived=has_unarchived)
         
@@ -653,6 +658,36 @@ def restore_all():
 
         abort(403)
 
+
+@app.route("/apply", methods=["GET", "POST"])
+def apply():
+    if request.method == "POST":
+        now = datetime.now()
+        date = now.strftime("%d-%m-%Y")
+
+        # Upload image to Cloudinary and return public_id
+        artist_img = request.files["artist_img"]
+        if artist_img.filename.split(".")[-1].lower() in ALLOWED_EXTENSIONS:
+            upload_result = cloudinary.uploader.upload(artist_img)["public_id"]
+        else:
+            upload_result = ""
+
+        application = {
+            "artist_name": request.form.get("artist_name"),
+            "artist_bio": request.form.get("artist_bio"),
+            "artist_url": request.form.get("artist_url"),
+            "more_info": request.form.get("more_info"),
+            "artist_img": upload_result,
+            "contact_name": request.form.get("contact_name"),
+            "contact_phone": request.form.get("contact_phone"),
+            "contact_email": request.form.get("contact_email"),
+            "date_submitted": date
+        }
+        mongo.db.applications.insert_one(application)
+        flash("Thank you for your application. We will be in touch if we are able to offer you a spot to play!")
+        return redirect(url_for("home"))
+
+    return render_template("apply.html")
 
 # Data backup and restore ----------------------------------------------------
 

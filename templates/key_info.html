@@ -47,6 +47,18 @@
                 checked
             {% endif %} >
         </div>
+        <div class="mb-3 form-check form-switch">
+            <label class="form-check-label" for="applications_open">Applications open</label>
+            <small class="text-muted">(Toggles visibility of apply button on homepage)</small>
+            <input id="applications_open" 
+            name="applications_open"
+            class="validate form-control form-check-input bg-secondary border-dark focus-ring" 
+            type="checkbox" 
+            role="switch"
+            {% if key_info.applications_open == "on" %} 
+                checked
+            {% endif %} >
+        </div>
     </fieldset>
     <fieldset>
         <legend class="mt-2">Website main image</legend>

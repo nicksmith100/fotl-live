@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-12 mb-3">
+            <h2 class="my-3 text-center">Apply to play at FotL</h2>
+
+            <h3 class="my-3">Important information</h3>
+
+            <p>You need to know:
+
+                <ol>
+                <li>We are a VERY small festival and can remunerate performers only very modestly. As always, it's a 'trust-us-to-try-to-raise-as-much-as-we-can-through-sponsorship-raffles-donations-wristband- sales-etc. - and-share-the-proceeds-equally' arrangement. We are not subsidised.</li>
+
+                <li>Everyone involved in the organization gives their services on a voluntary basis.</li>
+
+                <li>We have some aims:</li>
+
+                <ul>
+                <li>To bring a range of innovative and musically diverse musicians and writers to south east Wales, in order to both serve and inspire a local (and wider) audience with a passion for discovery. In addition, to provide a platform for local writers and musicians.</li> 
+                <li>To maintain a small event with few overheads.</li>
+                <li>To rely on goodwill and trust from all, to all in every aspect of the event.</li>
+                <li>To be the antithesis of a modern, corporate festival; instead, to maintain an intimate, collegiate atmosphere, where everyone seems to get to know everyone else and feels the better for it; a place where the pundits and the plaudits both mix and, sometimes, exchange roles!</li>
+                </ul>
+
+                <li>In terms of set-up: we have three outside stages and one, small, inside stage. In general, we encourage those performing to play on two stages at two contrasting times (i.e. early/late) to provide the performer with optimal audiences; most sets will be 40 minutes long.</li>
+
+                <li>There is just a little on-site camping/camper van spaces and these will have to be 'booked' (free of charge) with us beforehand. The facilities are basic (With the use of a toilet and hand-wash basin). There are a number of campsites near the village but, presently no permanent site within it (The Old Station Tintern has ended its camping facility). Details can be found on the festival website. However, a local pub - The Anchor - has allowed camping in a field they own for the price of one meal bought from them.</li>
+                </ol>
+
+            </p>
+        </div>    
+    </div> 
+</div>
+
+<div class="container">
+    <div class="row">
+        <form method="POST" action="{{ url_for('apply') }}" enctype="multipart/form-data" class="w-100 mx-auto">
+            <fieldset class="mt-1">
+                <legend>Acknowledgement</legend>
+                <div class="mb-3">
+                    <input type="checkbox" id="acknowledgement" name="acknowledgement" required>
+                    <label for="acknowledgement" class="form-label ms-1">I confirm that I have read and understood the above information</label>
+                </div>
+            </fieldset>
+            <fieldset class="mt-3">
+                <legend>Artist information</legend>
+                <div class="mb-3">
+                    <label for="artist_name" class="form-label"><i class="bi bi-alphabet" aria-hidden="true"></i> Artist Name</label>
+                    <input type="text" minlength="1" class="validate form-control" id="artist_name" name="artist_name" placeholder="(Required)" required>
+                </div>
+                <div class="mb-3">
+                    <label for="artist_bio" class="form-label"><i class="bi bi-blockquote-left" aria-hidden="true"></i> Biography<br></label>
+                    <textarea minlength="10" maxlength="3000" rows="15" class="validate form-control" id="artist_bio" name="artist_bio" placeholder="(Optional) Please provide a few paragraphs describing the artist, i.e. how you would expect them to be described on the line-up page if booked. Please just include text describing the artist here - you can provide links and further information in the spaces below."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="artist_url" class="form-label"><i class="bi bi-link-45deg" aria-hidden="true"></i> Website<br></label>
+                    <input type="text" minlength="5" maxlength="200" class="validate form-control" id="artist_url" name="artist_url" placeholder="(Optional) The artist's main website">
+                </div>
+                <div class="mb-3">
+                    <label for="more_info" class="form-label"><i class="bi bi-info-circle-fill" aria-hidden="true"></i> More info<br></label>
+                    <textarea minlength="10" maxlength="3000" rows="5" class="validate form-control" id="more_info" name="more_info" placeholder="(Optional) Any further relevant info, including links to Bandcamp, YouTube, social media, etc."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="artist_img" class="form-label"><i class="bi bi-image" aria-hidden="true"></i> Image<br></label>
+                    <input
+                    type="file"
+                    class="form-control"
+                    id="artist_img"
+                    name="artist_img"
+                    accept="image/*"
+                    >
+                </div>
+            </fieldset>
+            <fieldset class="mt-3">
+                <legend>Contact information</legend>
+                <div class="mb-3">
+                    <label for="contact_name" class="form-label"><i class="bi bi-person-fill" aria-hidden="true"></i> Name</label>
+                    <input type="text" minlength="1" class="validate form-control" id="contact_name" name="contact_name" placeholder="(Required)" required>
+                </div>
+                <div class="mb-3">
+                    <label for="contact_phone" class="form-label"><i class="bi bi-telephone-fill" aria-hidden="true"></i> Telephone</label>
+                    <input type="number" minlength="11" class="validate form-control" id="contact_phone" name="contact_phone" placeholder="(Optional)">
+                </div>
+                <div class="mb-3">
+                    <label for="contact_email" class="form-label"><i class="bi bi-envelope-at-fill" aria-hidden="true"></i> Email</label>
+                    <input type="email" minlength="5" class="validate form-control" id="contact_email" name="contact_email" placeholder="(Required)" required>
+                </div>
+            </fieldset>
+            <div class="col-12 my-3">
+                <button type="submit" class="btn btn-dark"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
