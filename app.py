@@ -516,6 +516,7 @@ def add_artist():
                 "show3_duration": request.form.get("show3_duration"),
                 "last_edit_by": session["user"],
                 "last_edit_on": date,
+                "archived": False,
             }
             mongo.db.artists.insert_one(artist)
             flash(
