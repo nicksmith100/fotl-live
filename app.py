@@ -676,13 +676,13 @@ def apply():
         application = {
             "artist_name": request.form.get("artist_name"),
             "artist_bio": request.form.get("artist_bio"),
-            "artist_url": request.form.get("artist_url"),
             "more_info": request.form.get("more_info"),
             "artist_img": upload_result,
             "contact_name": request.form.get("contact_name"),
             "contact_phone": request.form.get("contact_phone"),
             "contact_email": request.form.get("contact_email"),
-            "date_submitted": date
+            "date_submitted": date,
+            "approved": False,
         }
         mongo.db.applications.insert_one(application)
         flash("Thank you for your application. We will be in touch if we are able to offer you a spot to play!")
