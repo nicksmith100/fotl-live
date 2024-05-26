@@ -34,7 +34,7 @@ app.config["MONGO_URI"] = os.environ.get("MONGO_URI")
 app.secret_key = os.environ.get("SECRET_KEY")
 
 mongo = PyMongo(app)
-ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif"]
+ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "bmp", "tiff", "ico", "pdf", "eps", "psd", "svg", "webp", "jxr", "wdp"]
 
 # Cloudinary config
 cloudinary.config(
@@ -482,6 +482,8 @@ def add_artist():
     # Check user is admin
     if "user" in session:
 
+        application = {}
+
         if request.method == "POST":
             now = datetime.now()
             date = now.strftime("%d-%m-%Y")
@@ -492,13 +494,14 @@ def add_artist():
             show3_start = ds_to_dt(request.form.get("show3_start"))
 
             # Upload image to Cloudinary and return public_id
+            # Or use current image if converting application into artist profile
             artist_img = request.files["artist_img"]
             if artist_img.filename.split(".")[-1].lower(
                     ) in ALLOWED_EXTENSIONS:
                 upload_result = cloudinary.uploader.upload(
                     artist_img)["public_id"]
             else:
-                upload_result = ""
+                upload_result = request.form.get("artist_img_id")
 
             artist = {
                 "artist_name": request.form.get("artist_name"),
@@ -526,7 +529,7 @@ def add_artist():
             return redirect(url_for("artists"))
 
         stages = mongo.db.key_info.find_one()["stages"]
-        return render_template("add_artist.html", stages=stages)
+        return render_template("add_artist.html", stages=stages, application=application)
 
     else:
 
@@ -683,12 +686,103 @@ def apply():
             "contact_email": request.form.get("contact_email"),
             "date_submitted": date,
             "approved": False,
+            "rejected": False,
         }
         mongo.db.applications.insert_one(application)
         flash("Thank you for your application. We will be in touch if we are able to offer you a spot to play!")
         return redirect(url_for("home"))
 
     return render_template("apply.html")
+
+
+@app.route("/applications")
+def applications():
+
+    # Check user is admin
+    if "user" in session:
+
+        new_applications = list(mongo.db.applications.find({"approved": False, "rejected": False}).sort("date_submitted"))
+        approved_applications = list(mongo.db.applications.find({"approved": True}).sort("date_submitted"))
+        rejected_applications = list(mongo.db.applications.find({"rejected": True}).sort("date_submitted"))
+
+        return render_template("applications.html", new_applications=new_applications, approved_applications=approved_applications, rejected_applications=rejected_applications)
+        
+    else:
+        abort(403)
+
+
+@app.route("/approve_application/<application_id>")
+def approve_application(application_id):
+
+    # Check user is admin
+    if "user" in session:
+
+        approved_application = mongo.db.applications.find_one(
+            {"_id": ObjectId(application_id)})[
+            "artist_name"
+        ]
+
+        mongo.db.applications.update_one({"_id": ObjectId(application_id)}, {"$set": {"approved": True, "rejected": False}})
+        flash("Application {} approved".format(approved_application))
+        return redirect(url_for("applications"))
+
+    else:
+
+        abort(403)
+
+
+@app.route("/reject_application/<application_id>")
+def reject_application(application_id):
+
+    # Check user is admin
+    if "user" in session:
+
+        rejected_application = mongo.db.applications.find_one(
+            {"_id": ObjectId(application_id)})[
+            "artist_name"
+        ]
+
+        mongo.db.applications.update_one({"_id": ObjectId(application_id)}, {"$set": {"approved": False, "rejected": True}})
+        flash("Application {} rejected".format(rejected_application))
+        return redirect(url_for("applications"))
+
+    else:
+
+        abort(403)
+
+
+@app.route("/delete_application/<application_id>")
+def delete_application(application_id):
+
+    # Check user is admin
+    if "user" in session:
+
+        deleted_application = mongo.db.applications.find_one(
+            {"_id": ObjectId(application_id)})[
+            "artist_name"
+        ]
+        mongo.db.applications.delete_one({"_id": ObjectId(application_id)})
+        flash("Application {} successfully deleted".format(deleted_application))
+        return redirect(url_for("applications"))
+
+    else:
+
+        abort(403)
+
+
+@app.route("/create_profile/<application_id>")
+def create_profile(application_id):
+
+    # Check user is admin
+    if "user" in session:
+
+        application = mongo.db.applications.find_one({"_id": ObjectId(application_id)})
+        return render_template("add_artist.html", application=application)
+
+    else:
+
+        abort(403)
+
 
 # Data backup and restore ----------------------------------------------------
 
