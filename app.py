@@ -9,6 +9,7 @@ from flask import (
     session,
     url_for,
     abort,
+    jsonify,
 )
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
@@ -814,12 +815,22 @@ def delete_comment(application_id, comment_id):
 
 @app.route("/application/<application_id>/vote", methods=["POST"])
 def cast_vote(application_id):
-    vote_type = request.form.get("vote_type")
+    vote_type = request.json.get("vote_type")
     if vote_type == "upvote":
         mongo.db.applications.update_one({"_id": ObjectId(application_id)}, {"$inc": {"votes.upvotes": 1}})
     elif vote_type == "downvote":
         mongo.db.applications.update_one({"_id": ObjectId(application_id)}, {"$inc": {"votes.downvotes": 1}})
-    return redirect(url_for("applications"))
+    return jsonify({"success": True})
+
+@app.route("/application/<application_id>/undo-vote", methods=["POST"])
+def undo_vote(application_id):
+    vote_type = request.json.get("vote_type")
+    if vote_type == "upvote":
+        mongo.db.applications.update_one({"_id": ObjectId(application_id)}, {"$inc": {"votes.upvotes": -1}})
+    elif vote_type == "downvote":
+        mongo.db.applications.update_one({"_id": ObjectId(application_id)}, {"$inc": {"votes.downvotes": -1}})
+    return jsonify({"success": True})
+   
 
 # Data backup and restore ----------------------------------------------------
 

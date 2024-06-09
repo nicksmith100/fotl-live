@@ -50,9 +50,18 @@
                         </p>
                       </div>
                     </div>
-                    <div id="{{ application.artist_name| replace(' ','') }}-comments" class="card mx-2 artist-bio mb-5 col-10">
+                    <div id="{{ application.artist_name| replace(' ','') }}-comments" data-application-id="{{ application._id }}" class="card p-2 mx-2 artist-bio mb-5 col-10">
                       <h3 class="card-title">Comments and votes</h3>
                       
+                      <!-- Voting buttons -->
+                      <h4>Votes:</h4>
+                      <p>
+                        <i id="upvote-btn-{{ application._id }}" class="bi bi-hand-thumbs-up" aria-hidden="true"></i>
+                        <span id="upvote-count-{{ application._id }}">{{ application.votes.upvotes }}</span>
+                        <i id="downvote-btn-{{ application._id }}" class="bi bi-hand-thumbs-down" aria-hidden="true"></i>
+                        <span id="downvote-count-{{ application._id }}">{{ application.votes.downvotes }}</span>
+                      </p>
+
                       <!-- Display comments -->
                       {% if application.comments %}
                       <h4>Comments:</h4>
@@ -79,16 +88,6 @@
                         <input type="submit" value="Add comment">
                         </form>
 
-                        <!-- Display votes -->
-                        <p>Upvotes: {{ application.votes.upvotes }}</p>
-                        <p>Downvotes: {{ application.votes.downvotes }}</p>
-
-                        <!-- Form for casting a vote -->
-                        <form action="{{ url_for('cast_vote', application_id=application._id) }}" method="post">
-                        <input type="radio" name="vote_type" value="upvote"> Upvote
-                        <input type="radio" name="vote_type" value="downvote"> Downvote
-                        <input type="submit" value="Cast vote">
-                        </form>
                     </div>
                   {% endfor %}
                 {% else %}
@@ -203,4 +202,93 @@
     </div>        
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+  let applications = document.querySelectorAll('[data-application-id]');
+  applications.forEach(application => {
+    // Get the application ID
+    let applicationId = application.dataset.applicationId;
+
+    // Get the upvote and downvote buttons
+    let upvoteButton = document.getElementById(`upvote-btn-${applicationId}`);
+    let downvoteButton = document.getElementById(`downvote-btn-${applicationId}`);
+
+    // Add event listeners to the upvote and downvote buttons
+    upvoteButton.addEventListener('click', () => castVote('upvote'));
+    downvoteButton.addEventListener('click', () => castVote('downvote'));
+
+    // Function to cast a vote
+    function castVote(voteType) {
+      // Check if the user has already voted
+      let voted = localStorage.getItem(`voted-${applicationId}`);
+      if (voted && voted === voteType) {
+        // If the user has already voted and clicks the same button again, undo the vote
+        undoVote(voteType);
+      } else {
+        // If the user has not voted or clicks a different button, cast a new vote
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `/application/${applicationId}/vote`, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({ vote_type: voteType }));
+
+        // Update the vote count in the HTML element
+        if (voteType === 'upvote') {
+          let upvoteCount = document.getElementById(`upvote-count-${applicationId}`);
+          upvoteCount.textContent = parseInt(upvoteCount.textContent) + 1;
+          if (voted === 'downvote') {
+            let downvoteCount = document.getElementById(`downvote-count-${applicationId}`);
+            downvoteCount.textContent = parseInt(downvoteCount.textContent) - 1;
+          }
+          upvoteButton.classList.remove('bi-hand-thumbs-up');
+          upvoteButton.classList.add('bi-hand-thumbs-up-fill');
+          downvoteButton.classList.remove('bi-hand-thumbs-down-fill');
+          downvoteButton.classList.add('bi-hand-thumbs-down');
+        } else if (voteType === 'downvote') {
+          let downvoteCount = document.getElementById(`downvote-count-${applicationId}`);
+          downvoteCount.textContent = parseInt(downvoteCount.textContent) + 1;
+          if (voted === 'upvote') {
+            let upvoteCount = document.getElementById(`upvote-count-${applicationId}`);
+            upvoteCount.textContent = parseInt(upvoteCount.textContent) - 1;
+          }
+          downvoteButton.classList.remove('bi-hand-thumbs-down');
+          downvoteButton.classList.add('bi-hand-thumbs-down-fill');
+          upvoteButton.classList.remove('bi-hand-thumbs-up-fill');
+          upvoteButton.classList.add('bi-hand-thumbs-up');
+        }
+
+        // Store the user's vote in local storage
+        localStorage.setItem(`voted-${applicationId}`, voteType);
+      }
+    }
+
+    // Function to undo a vote
+    function undoVote(voteType) {
+      let xhr = new XMLHttpRequest();
+      xhr.open('POST', `/application/${applicationId}/undo-vote`, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({ vote_type: voteType }));
+
+      // Update the vote count in the HTML element
+      if (voteType === 'upvote') {
+        let upvoteCount = document.getElementById(`upvote-count-${applicationId}`);
+        upvoteCount.textContent = parseInt(upvoteCount.textContent) - 1;
+        upvoteButton.classList.remove('bi-hand-thumbs-up-fill');
+        upvoteButton.classList.add('bi-hand-thumbs-up');
+      } else if (voteType === 'downvote') {
+        let downvoteCount = document.getElementById(`downvote-count-${applicationId}`);
+        downvoteCount.textContent = parseInt(downvoteCount.textContent) - 1;
+        downvoteButton.classList.remove('bi-hand-thumbs-down-fill');
+        downvoteButton.classList.add('bi-hand-thumbs-down');
+      }
+
+      // Remove the user's vote from local storage
+      localStorage.removeItem(`voted-${applicationId}`);
+    }
+
+  });
+
+</script>
 {% endblock %}
