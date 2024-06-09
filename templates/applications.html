@@ -14,7 +14,7 @@
               </button>
             </h2>
             <div id="new-applications" class="accordion-collapse collapse show" data-bs-parent="#application-accordion">
-              <div class="accordion-body">
+              <div class="accordion-body row">
                 {% if new_applications %}
                   {% for application in new_applications %}
                     <div id="{{ application.artist_name | replace(' ','') }}" class="card mx-2 mb-2 mb-lg-5 col-12 col-sm-9 col-lg-5 g-0">
@@ -50,6 +50,46 @@
                         </p>
                       </div>
                     </div>
+                    <div id="{{ application.artist_name| replace(' ','') }}-comments" class="card mx-2 artist-bio mb-5 col-10">
+                      <h3 class="card-title">Comments and votes</h3>
+                      
+                      <!-- Display comments -->
+                      {% if application.comments %}
+                      <h4>Comments:</h4>
+                      <ul>
+                        {% for comment in application.comments %}
+                          <li>
+                            {{ comment.text }} 
+                            <span class="small">({{ comment.created_by }})</span>
+                            {% if comment.created_by == session.user %}
+                            <form action="{{ url_for('delete_comment', application_id=application._id, comment_id=comment._id) }}" method="post">
+                              <input type="submit" value="Delete">
+                            </form>
+                            {% endif %}
+                          </li>
+                        {% endfor %}
+                      </ul>
+                      {% else %}
+                      <p>No comments yet.</p>
+                      {% endif %}
+
+                        <!-- Form for adding a new comment -->
+                        <form action="{{ url_for('add_comment', application_id=application._id) }}" method="post">
+                        <input type="text" name="comment">
+                        <input type="submit" value="Add comment">
+                        </form>
+
+                        <!-- Display votes -->
+                        <p>Upvotes: {{ application.votes.upvotes }}</p>
+                        <p>Downvotes: {{ application.votes.downvotes }}</p>
+
+                        <!-- Form for casting a vote -->
+                        <form action="{{ url_for('cast_vote', application_id=application._id) }}" method="post">
+                        <input type="radio" name="vote_type" value="upvote"> Upvote
+                        <input type="radio" name="vote_type" value="downvote"> Downvote
+                        <input type="submit" value="Cast vote">
+                        </form>
+                    </div>
                   {% endfor %}
                 {% else %}
                     <p class="fs-4 text-danger">There are currently no new applications.</p>
@@ -64,7 +104,7 @@
               </button>
             </h2>
             <div id="approved-applications" class="accordion-collapse collapse" data-bs-parent="#application-accordion">
-              <div class="accordion-body">
+              <div class="accordion-body row">
                 <div id="approved-applications">
                   {% if approved_applications %}
                     {% for application in approved_applications %}
@@ -114,7 +154,7 @@
               </button>
             </h2>
             <div id="rejected-applications" class="accordion-collapse collapse" data-bs-parent="#application-accordion">
-              <div class="accordion-body">
+              <div class="accordion-body row">
                 <div id="rejected-applications">
                   {% if rejected_applications %}
                     {% for application in rejected_applications %}

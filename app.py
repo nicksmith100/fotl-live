@@ -687,6 +687,8 @@ def apply():
             "date_submitted": date,
             "approved": False,
             "rejected": False,
+            "comments": [],
+            "votes": {"upvotes": 0, "downvotes": 0},
         }
         mongo.db.applications.insert_one(application)
         flash("Thank you for your application. We will be in touch if we are able to offer you a spot to play!")
@@ -702,8 +704,13 @@ def applications():
     if "user" in session:
 
         new_applications = list(mongo.db.applications.find({"approved": False, "rejected": False}).sort("date_submitted"))
+        for application in new_applications:
+            application["comments"] = list(mongo.db.comments.find({"application_id": application["_id"]}))
+
         approved_applications = list(mongo.db.applications.find({"approved": True}).sort("date_submitted"))
         rejected_applications = list(mongo.db.applications.find({"rejected": True}).sort("date_submitted"))
+
+        print(new_applications)
 
         return render_template("applications.html", new_applications=new_applications, approved_applications=approved_applications, rejected_applications=rejected_applications)
         
@@ -783,6 +790,36 @@ def create_profile(application_id):
 
         abort(403)
 
+
+# Comment creation, editing and deletion ----------------------------------------------
+
+@app.route("/application/<application_id>/comment", methods=["POST"])
+def add_comment(application_id):
+    comment = request.form.get("comment")
+    mongo.db.comments.insert_one({
+        "application_id": ObjectId(application_id),
+        "text": comment,
+        "created_by": session["user"]
+    })
+    return redirect(url_for("applications"))
+
+
+@app.route("/application/<application_id>/comment/<comment_id>/delete", methods=["POST"])
+def delete_comment(application_id, comment_id):
+    comment = mongo.db.comments.find_one({"_id": ObjectId(comment_id)})
+    if comment["created_by"] == session["user"]:
+        mongo.db.comments.delete_one({"_id": ObjectId(comment_id)})
+    return redirect(url_for("applications"))
+
+
+@app.route("/application/<application_id>/vote", methods=["POST"])
+def cast_vote(application_id):
+    vote_type = request.form.get("vote_type")
+    if vote_type == "upvote":
+        mongo.db.applications.update_one({"_id": ObjectId(application_id)}, {"$inc": {"votes.upvotes": 1}})
+    elif vote_type == "downvote":
+        mongo.db.applications.update_one({"_id": ObjectId(application_id)}, {"$inc": {"votes.downvotes": 1}})
+    return redirect(url_for("applications"))
 
 # Data backup and restore ----------------------------------------------------
 
