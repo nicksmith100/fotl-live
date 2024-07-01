@@ -165,6 +165,43 @@ def lineup():
     # Get display_schedule value from database
     display_schedule = mongo.db.key_info.find_one()["display_schedule"]
 
+    # Get current time in the same timezone as your showtimes
+    now = datetime.now() 
+
+    now_and_next = {}
+    for stage in stages:
+        now_and_next[stage] = {
+            "now": None,
+            "next": None
+        }
+
+    for showtime in showtimes:
+        stage = showtime["showtime_stage"]
+        start = showtime["showtime_start"]
+        end = showtime["showtime_end"]
+
+        # Check if showtime is happening now
+        if start <= now <= end:
+            now_and_next[stage]["now"] = showtime
+
+        # Check if showtime is the next one on this stage
+        elif start > now and (
+            now_and_next[stage]["next"] is None  
+            or start < now_and_next[stage]["next"]["showtime_start"]
+        ):
+            now_and_next[stage]["next"] = showtime
+
+    return render_template(
+        "lineup.html",
+        artists=artists,
+        dates=dates,
+        showtimes=showtimes,
+        stages=stages,
+        display_schedule=display_schedule,
+        now_and_next=now_and_next, # Pass the now_and_next data to the template
+    )
+
+
     return render_template(
         "lineup.html",
         artists=artists,
