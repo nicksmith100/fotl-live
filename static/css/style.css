@@ -182,3 +182,13 @@ h2, h3, h4 {
   transform: rotateY(180deg);
   overflow: auto;
 }
+
+/* Printable schedule */
+
+.schedule-text {
+    font-size: 12px;
+}
+
+.schedule-time {
+    font-size: 10px;
+}

@@ -202,13 +202,71 @@ def lineup():
     )
 
 
+@app.route("/schedule")
+def schedule():
+
+    # Get individual dates for schedule
+    start_dt = mongo.db.key_info.find_one()["event_start"]
+    end_dt = mongo.db.key_info.find_one()["event_end"]
+    delta = timedelta(days=1)
+    dates = []
+
+    while start_dt <= end_dt:
+        dates.append(start_dt)
+        start_dt += delta
+
+    # Add individual showtimes to list
+    showtimes = []
+    artists = list(mongo.db.artists.find())
+    for artist in artists:
+
+        shows = ["show1", "show2", "show3"]
+
+        for show in shows:
+
+            if artist[f"{show}_duration"] == "":
+                showtime_duration = 0
+            else:
+                showtime_duration = int(artist[f"{show}_duration"])
+
+            if artist[f"{show}_start"] > datetime(1900, 1, 1):
+
+                # Get showtime info from database
+                showtime_stage = artist[f"{show}_stage"]
+                showtime_artist = artist["artist_name"]
+                showtime_day = artist[f"{show}_start"].strftime("%A")
+                showtime_start = artist[f"{show}_start"]
+                showtime_end = showtime_start + timedelta(
+                    minutes=showtime_duration)
+
+                # Create decimal time, rounded to nearest half integer
+                (h,m) = showtime_start.strftime('%-H.%M').split(".")
+                showtime_dec = int(h)
+
+                # Add showtime information to list
+                showtimes.append(
+                    {
+                        "showtime_stage": showtime_stage,
+                        "showtime_artist": showtime_artist,
+                        "showtime_day": showtime_day,
+                        "showtime_start": showtime_start,
+                        "showtime_end": showtime_end,
+                        "showtime_dec": showtime_dec,
+                    }
+                )
+
+    # Sort showtimes by start date/time
+    showtimes.sort(key=lambda item: item["showtime_start"])
+
+    # Get stage names from database
+    stages = mongo.db.key_info.find_one()["stages"]
+
     return render_template(
-        "lineup.html",
+        "schedule.html",
         artists=artists,
         dates=dates,
         showtimes=showtimes,
         stages=stages,
-        display_schedule=display_schedule,
     )
 
 
