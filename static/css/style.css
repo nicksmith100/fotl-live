@@ -192,3 +192,7 @@ h2, h3, h4 {
 .schedule-time {
     font-size: 10px;
 }
+
+#schedule-print {
+    margin-bottom: 200px;
+}

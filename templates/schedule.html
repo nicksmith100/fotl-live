@@ -36,12 +36,12 @@
     
 {% if artists|length > 0 %}
 
-<div class="container mt-5">
+<div class="container mt-5 mx-auto">
         
     <h2>Folk on the Lawn</h2>
     <p>11-14 July 2024</p>
     
-    <div id="schedule-print" class="col-10">
+    <div id="schedule-print" class="col-10 offset-1">
         {% for date in dates %}
             <table class="table">
                 <thead>
@@ -86,6 +86,12 @@
 </div>     
 
 {% endif %}
+
+<footer class="footer fixed-bottom col-8 mx-auto">
+    <div class="footer-content">
+        <img src="{{ url_for('static', filename='images/grass.png') }}" alt="Artistic impression of grass lawn" class="footer-img img-fluid w-100">
+    </div>
+</footer>
 
 </body>
 
