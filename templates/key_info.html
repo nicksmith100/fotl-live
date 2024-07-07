@@ -48,6 +48,18 @@
             {% endif %} >
         </div>
         <div class="mb-3 form-check form-switch">
+            <label class="form-check-label" for="display_countdown">Display countdown</label>
+            <small class="text-muted">(Toggles visibility of countdown/now-and-next on Home page)</small>
+            <input id="display_countdown" 
+            name="display_countdown"
+            class="validate form-control form-check-input bg-secondary border-dark focus-ring" 
+            type="checkbox" 
+            role="switch"
+            {% if key_info.display_countdown == "on" %} 
+                checked
+            {% endif %} >
+        </div>
+        <div class="mb-3 form-check form-switch">
             <label class="form-check-label" for="applications_open">Applications open</label>
             <small class="text-muted">(Toggles visibility of apply button on homepage)</small>
             <input id="applications_open" 
@@ -78,7 +90,7 @@
     </fieldset>
     <fieldset>
         <legend class="mt-2">Homepage banner</legend>
-        <p class="text-muted">Display a key message on the website homepage</p>
+        <p class="text-muted">Display a key message on the website homepage (only shows if countdown not active)</p>
         <div class="mb-3">
             
             <label for="banner_heading" class="form-label"><i class="bi bi-card-heading" aria-hidden="true"></i> Banner heading<br></label>

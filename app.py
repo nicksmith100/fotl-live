@@ -522,6 +522,7 @@ def key_info():
                     "fundraising_url": request.form.get("fundraising_url"),
                     "last_edit_by": session["user"],
                     "last_edit_on": date,
+                    "display_countdown": request.form.get("display_countdown"),
                 }
             }
             mongo.db.key_info.update_one({"_id": key_info_id}, key_info)
