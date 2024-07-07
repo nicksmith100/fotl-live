@@ -67,16 +67,16 @@ $(document).ready(function(){
             let nowCalc = new Date();
             
             // Lines below allow testing of now and next ahead of time
-            // now.setDate(now.getDate() + 7);
-            // nowCalc.setDate(nowCalc.getDate() + 7);
+            // now.setDate(now.getDate() + 4);
+            // nowCalc.setDate(nowCalc.getDate() + 4);
        
-        let diff = eventStartDate - now;
+        const diff = eventStartDate - now;
       
-        let days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        let hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       
-        if (diff <= 0) {
+        if (diff < 0) {
          
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             now = now.toISOString();
@@ -103,15 +103,28 @@ $(document).ready(function(){
                 let timeRemain = Math.floor((endShow - nowCalc) / (1000 * 60)) + 1;
                 nowElement.innerHTML = `<strong>Now:</strong> ${nowShow.showtime_artist} <small>(${timeRemain} min left)</small>`;
             } else {
-                nowElement.innerHTML = `<strong>Now:</strong> No current performance`;
+                nowElement.innerHTML = `<strong>Now:</strong> <span class="text-muted">Break</span>`;
             }
         
             if (nextShow) {
                 let startShow = new Date (nextShow.showtime_start);
-                let timeUntil = Math.floor((startShow - nowCalc) / (1000 * 60)) + 1;
-                nextElement.innerHTML = `<strong>Next:</strong> ${nextShow.showtime_artist} <small>(in ${timeUntil} min)</small>`;
+                let hoursUntil = Math.floor(((startShow - nowCalc) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minsUntil = Math.floor(((startShow - nowCalc) % (1000 * 60 * 60)) / (1000 * 60)) + 1;
+                let timeUntil = "";
+                if (hoursUntil < 1) {
+                    timeUntil = minsUntil + " min";
+                } else if (hoursUntil == 1 && minsUntil == 0) {
+                    timeUntil = "1 hour";
+                } else if (hoursUntil == 1 && minsUntil > 0) {
+                    timeUntil = "1 hour, " + minsUntil + "min";
+                } else if (hoursUntil > 1 && minsUntil == 0) {
+                    timeUntil = hoursUntil + " hours";
+                } else {
+                    timeUntil = hoursUntil + " hours, " + minsUntil + " min";
+                }
+                nextElement.innerHTML = `<strong>Next:</strong> ${nextShow.showtime_artist} <small>(in ${timeUntil})</small>`;
             } else {
-                nextElement.innerHTML = `<strong>Next:</strong> No upcoming performance`;
+                nextElement.innerHTML = `<strong>Next:</strong> <span class="text-muted">No upcoming performances</span>`;
             }
             }
         
