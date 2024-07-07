@@ -6,33 +6,8 @@
     {% if display_schedule == "on" %}
 
         <div class="container mt-5">
-        
-        <h2>Now & Next</h2>
 
-            <div class="row mt-1 mb-5">
-
-                {% for stage in stages %}
-                <div class="col-12 col-sm-12 bg-white m-1 p-2 border border-light rounded">
-                    <h3>{{ stage }}</h3>
-                    
-                    {% if now_and_next[stage]['now'] %}
-                        <p>Now: {{ now_and_next[stage]['now']['showtime_artist'] }}</p> 
-                    {% else %}
-                        <p>Now: No one is currently performing on this stage</p>
-                    {% endif %}
-
-                    {% if now_and_next[stage]['next'] %}
-                        <p>Next: {{ now_and_next[stage]['next']['showtime_artist'] }} ({{ now_and_next[stage]['next']['showtime_start'].strftime('%-I.%M%P, %A')}})</p>
-                    {% else %}
-                        <p>Next: No upcoming performances on this stage</p>
-                    {% endif %}
-                </div>
-                {% endfor %}
-                
-
-            </div>
-
-            <h2>Schedule</h2>
+          <h2>Schedule</h2>
 
             <div class="accordion my-3" id="schedule">
                 {% for date in dates %}

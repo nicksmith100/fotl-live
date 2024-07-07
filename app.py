@@ -101,8 +101,60 @@ def home():
     applications_open = mongo.db.key_info.find_one()["applications_open"]
 
     GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY")
-    return render_template("home.html", applications_open=applications_open,
-                           GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY)
+    
+    # Get showtimes for now and next
+    
+    showtimes = []
+    artists = list(mongo.db.artists.find())
+    for artist in artists:
+
+        shows = ["show1", "show2", "show3"]
+
+        for show in shows:
+
+            if artist[f"{show}_duration"] == "":
+                showtime_duration = 0
+            else:
+                showtime_duration = int(artist[f"{show}_duration"])
+
+            if artist[f"{show}_start"] > datetime(1900, 1, 1):
+
+                # Get showtime info from database
+                showtime_stage = artist[f"{show}_stage"]
+                showtime_artist = artist["artist_name"]
+                showtime_day = artist[f"{show}_start"].strftime("%A")
+                showtime_start = artist[f"{show}_start"]
+                showtime_end = showtime_start + timedelta(
+                    minutes=showtime_duration)
+
+                # Create decimal time, rounded to nearest half integer
+                (h,m) = showtime_start.strftime('%-H.%M').split(".")
+                showtime_dec = int(h)
+
+                # Add showtime information to list
+                showtimes.append(
+                    {
+                        "showtime_stage": showtime_stage,
+                        "showtime_artist": showtime_artist,
+                        "showtime_day": showtime_day,
+                        "showtime_start": showtime_start.isoformat(),
+                        "showtime_end": showtime_end.isoformat(),
+                    }
+                )
+
+    # Sort showtimes by start date/time and convert to json
+    showtimes.sort(key=lambda item: item["showtime_start"])
+
+    # Get stage names from database
+    stages = mongo.db.key_info.find_one()["stages"]
+
+    return render_template(
+        "home.html",
+        applications_open=applications_open,
+        GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY,
+        showtimes=showtimes,
+        stages=stages,
+    )
 
 
 @app.route("/lineup")
@@ -165,31 +217,12 @@ def lineup():
     # Get display_schedule value from database
     display_schedule = mongo.db.key_info.find_one()["display_schedule"]
 
-    # Get current time in the same timezone as your showtimes
-    now = datetime.now() 
-
-    now_and_next = {}
-    for stage in stages:
-        now_and_next[stage] = {
-            "now": None,
-            "next": None
-        }
 
     for showtime in showtimes:
         stage = showtime["showtime_stage"]
         start = showtime["showtime_start"]
         end = showtime["showtime_end"]
 
-        # Check if showtime is happening now
-        if start <= now <= end:
-            now_and_next[stage]["now"] = showtime
-
-        # Check if showtime is the next one on this stage
-        elif start > now and (
-            now_and_next[stage]["next"] is None  
-            or start < now_and_next[stage]["next"]["showtime_start"]
-        ):
-            now_and_next[stage]["next"] = showtime
 
     return render_template(
         "lineup.html",
@@ -198,7 +231,6 @@ def lineup():
         showtimes=showtimes,
         stages=stages,
         display_schedule=display_schedule,
-        now_and_next=now_and_next, # Pass the now_and_next data to the template
     )
 
 

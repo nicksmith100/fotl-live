@@ -13,14 +13,34 @@
 {% endif %}
 
 <div class="container">
-    {% if key_info.banner_text != "" %}
+
+  {% if key_info.countdown %}
+    <div class="row">
+        <div id="countdown" class="border border-3 p-3 mt-5">
+        </div>
+
+        <div id="now-next" class="hidden border border-3 p-3 mt-5">
+          <div class="row">
+            <h2 class="mt-2">Now and Next</h2>
+            {% for stage in stages %}
+            <div class="col-12 col-sm-4 mt-2">
+              <h3 class="fs-4">{{stage}} Stage</h3>
+                <span id="now-{{stage}}"></span><br>
+                <span id="next-{{stage}}"></span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+    </div>
+  {% else %}
     <div class="row">
         <div id="banner" class="border border-3 p-3 mt-5">
             <h2 class="mt-2">{{ key_info.banner_heading }}</h2>
             <p>{{ key_info.banner_text }}</p>
         </div>
     </div>
-    {% endif %}
+  {% endif %}
+
     {% if key_info.fundraising_url != "" %}
     <div class="row">
         <div id="support" class="mt-5">
@@ -64,4 +84,12 @@
         </div>
     </div>  
 </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+<script>
+let festivalData = {{ showtimes|tojson }};
+</script>
 {% endblock %}
