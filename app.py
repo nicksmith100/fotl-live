@@ -105,7 +105,7 @@ def home():
     # Get showtimes for now and next
     
     showtimes = []
-    artists = list(mongo.db.artists.find())
+    artists = list(mongo.db.artists.find({"archived": False}))
     for artist in artists:
 
         shows = ["show1", "show2", "show3"]
@@ -172,7 +172,7 @@ def lineup():
 
     # Add individual showtimes to list
     showtimes = []
-    artists = list(mongo.db.artists.find())
+    artists = list(mongo.db.artists.find({"archived": False}))
     for artist in artists:
 
         shows = ["show1", "show2", "show3"]
@@ -209,7 +209,7 @@ def lineup():
     showtimes.sort(key=lambda item: item["showtime_start"])
 
     # Sort artists by artist name
-    artists = list(mongo.db.artists.find().sort("artist_name"))
+    artists = list(mongo.db.artists.find({"archived": False}).sort("artist_name"))
 
     # Get stage names from database
     stages = mongo.db.key_info.find_one()["stages"]
@@ -249,7 +249,7 @@ def schedule():
 
     # Add individual showtimes to list
     showtimes = []
-    artists = list(mongo.db.artists.find())
+    artists = list(mongo.db.artists.find({"archived": False}))
     for artist in artists:
 
         shows = ["show1", "show2", "show3"]
@@ -531,7 +531,7 @@ def key_info():
 
         # Check if shows have been added
         show_stages = []
-        artists = list(mongo.db.artists.find())
+        artists = list(mongo.db.artists.find({"archived": False}))
         shows = ["show1", "show2", "show3"]
 
         for artist in artists:
