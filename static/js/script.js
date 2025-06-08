@@ -60,7 +60,7 @@ $(document).ready(function(){
     
         const countdownDiv = document.getElementById("countdown");
         const nowNextDiv = document.getElementById("now-next");
-        const eventStartDate = new Date("July 11, 2024 18:01:00");
+        const eventStartDate = new Date("July 10, 2025 18:01:00");
       
         function updateCountdown() {
             let now = new Date();
@@ -71,7 +71,7 @@ $(document).ready(function(){
             // nowCalc.setDate(nowCalc.getDate() + 4);
        
         const diff = eventStartDate - now;
-      
+              
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -80,7 +80,7 @@ $(document).ready(function(){
          
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             now = now.toISOString();
-        
+                    
             let stages = {};
             for (let showtime of festivalData) {
             let stage = showtime.showtime_stage;
@@ -135,7 +135,7 @@ $(document).ready(function(){
       
         countdownDiv.innerHTML = `
         <h2 class="mt-2">The Final Countdown!</h2>
-        <p>There are just <strong>${days} days, ${hours} hours and ${minutes} minutes</strong> left until FotL 2024... We can't wait to see you again!</p>`; 
+        <p>There are just <strong>${days} days, ${hours} hours and ${minutes} minutes</strong> left until FotL... We can't wait to see you again!</p>`; 
        
         nowNextDiv.hidden = true;
       
