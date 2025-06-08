@@ -11,6 +11,11 @@
             <label for="artist_name" class="form-label"><i class="bi bi-alphabet" aria-hidden="true"></i> Name</label>
             <input type="text" minlength="1" class="validate form-control" id="artist_name" name="artist_name" value="{{ application.artist_name }}" required>
         </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="artist_schedule_only" name="artist_schedule_only">
+            <label class="form-check-label" for="artist_schedule_only">For schedule only<br>
+            <span class="small">(Allows entries to be added to schedule without appearing in list of artists)</span><br></label>
+        </div>
         <div class="mb-3">
             <label for="artist_bio" class="form-label"><i class="bi bi-blockquote-left" aria-hidden="true"></i> Biography<br></label>
             <textarea minlength="10" maxlength="3000" rows="15" class="validate form-control" id="artist_bio" name="artist_bio" >{{ application.artist_bio }}</textarea>

@@ -32,7 +32,13 @@
                                                             {% else %}
                                                                 <small>{{ showtime.showtime_start.strftime('%-I.%M%p')|lower }}-{{ showtime.showtime_end.strftime('%-I.%M%p')|lower }}</small>
                                                             {% endif %}
-                                                            <p><a href="#{{ showtime.showtime_artist | replace(' ','') }}" class="link-dark">{{ showtime.showtime_artist }}</a></p>
+                                                            <p>
+                                                                {% if showtime.showtime_schedule_only %}
+                                                                    {{ showtime.showtime_artist }}
+                                                                {% else %}
+                                                                    <a href="#{{ showtime.showtime_artist | replace(' ','') }}" class="link-dark">{{ showtime.showtime_artist }}</a>
+                                                                {% endif %} 
+                                                            </p>   
                                                         {% endif %}    
                                                     {% endif %}
                                                 {% endfor %}
@@ -54,15 +60,15 @@
     <h2>Artists</h2>
 
     <div class="row">
-        {% for artist in artists if not artist.archived %}
-            <div class="col-12 col-sm-4 col-lg-3">
+        {% for artist in artists if not artist.artist_schedule_only %}
+            <div class="col-12 col-sm-6 col-lg-6">
                 <a href="#{{ artist.artist_name | replace(' ','') }}" class="link-dark">{{ artist.artist_name }}</a>
             </div>
         {% endfor %}
     </div>
 
         <div class="row masonry-row mt-4" >
-        {% for artist in artists if not artist.archived %}
+        {% for artist in artists if not artist.artist_schedule_only %}
             
             <div id="{{ artist.artist_name | replace(' ','') }}" class="flip-card my-3 col-12 col-sm-6 col-lg-4">
                 <div class="flip-card-inner">    

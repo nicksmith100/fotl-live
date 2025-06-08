@@ -122,6 +122,7 @@ def home():
                 # Get showtime info from database
                 showtime_stage = artist[f"{show}_stage"]
                 showtime_artist = artist["artist_name"]
+                showtime_schedule_only = artist["artist_schedule_only"]
                 showtime_day = artist[f"{show}_start"].strftime("%A")
                 showtime_start = artist[f"{show}_start"]
                 showtime_end = showtime_start + timedelta(
@@ -136,6 +137,7 @@ def home():
                     {
                         "showtime_stage": showtime_stage,
                         "showtime_artist": showtime_artist,
+                        "showtime_schedule_only": showtime_schedule_only,
                         "showtime_day": showtime_day,
                         "showtime_start": showtime_start.isoformat(),
                         "showtime_end": showtime_end.isoformat(),
@@ -144,7 +146,7 @@ def home():
 
     # Sort showtimes by start date/time and convert to json
     showtimes.sort(key=lambda item: item["showtime_start"])
-
+    
     # Get stage names from database
     stages = mongo.db.key_info.find_one()["stages"]
 
@@ -189,6 +191,7 @@ def lineup():
                 # Get showtime info from database
                 showtime_stage = artist[f"{show}_stage"]
                 showtime_artist = artist["artist_name"]
+                showtime_schedule_only = artist["artist_schedule_only"]
                 showtime_day = artist[f"{show}_start"].strftime("%A")
                 showtime_start = artist[f"{show}_start"]
                 showtime_end = showtime_start + timedelta(
@@ -199,6 +202,7 @@ def lineup():
                     {
                         "showtime_stage": showtime_stage,
                         "showtime_artist": showtime_artist,
+                        "showtime_schedule_only": showtime_schedule_only,
                         "showtime_day": showtime_day,
                         "showtime_start": showtime_start,
                         "showtime_end": showtime_end,
@@ -634,6 +638,7 @@ def add_artist():
 
             artist = {
                 "artist_name": request.form.get("artist_name"),
+                "artist_schedule_only": request.form.get("artist_schedule_only"),
                 "artist_bio": request.form.get("artist_bio"),
                 "artist_url": request.form.get("artist_url"),
                 "artist_img": upload_result,
@@ -695,6 +700,7 @@ def edit_artist(artist_id):
             edited_artist = {
                 "$set": {
                     "artist_name": request.form.get("artist_name"),
+                    "artist_schedule_only": request.form.get("artist_schedule_only"),
                     "artist_bio": request.form.get("artist_bio"),
                     "artist_url": request.form.get("artist_url"),
                     "artist_img": upload_result,
