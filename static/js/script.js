@@ -60,7 +60,8 @@ $(document).ready(function(){
     
         const countdownDiv = document.getElementById("countdown");
         const nowNextDiv = document.getElementById("now-next");
-        const eventStartDate = new Date("July 10, 2025 18:01:00");
+        const eventStartDate = new Date(event_start_rev);
+
       
         function updateCountdown() {
             let now = new Date();

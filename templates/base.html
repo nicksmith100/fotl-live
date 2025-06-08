@@ -185,6 +185,7 @@
     <script>
         let event_start = {{ key_info.event_start.strftime('%d-%m-%Y')|tojson }};
         let event_end = {{ key_info.event_end.strftime('%d-%m-%Y')|tojson }};
+        let event_start_rev = {{ key_info.event_start.strftime('%Y-%m-%d')|tojson }};
     </script>
     {% block scripts %}
     {% endblock %}
