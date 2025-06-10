@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if team|length > 0 %}
+
+<div class="container mt-5" id="team-bios">
+
+    <h2>Meet the team</h2>
+
+    <p>Every one of us is a volunteer. We make not a penny out of FotL and, annually, invest many of our pennies to travel to, work at and buy/beg/borrow equipment for an event that means so much to both us and to many, many others. Just a little introduction to some of this year's Folk on the Lawn team.</p> 
+
+    <div class="row">
+        {% for artist in team %}
+            <div class="col-12 col-sm-6 col-lg-6">
+                <a href="#{{ artist.artist_name | replace(' ','') }}" class="link-dark">{{ artist.artist_name }}</a>
+            </div>
+        {% endfor %}
+    </div>
+
+        <div class="row masonry-row mt-4" >
+        {% for artist in team %}
+            
+            <div id="{{ artist.artist_name | replace(' ','') }}" class="flip-card my-3 col-12 col-sm-6 col-lg-4">
+                <div class="flip-card-inner">    
+                    <div class="card flip-card-front">
+                        {% if artist.artist_img != "" %}
+                        <img src="{{ cloudinary_url }}{{ artist.artist_img }}" alt="{{ artist.artist_name }}" class="card-img-top">
+                        {% else %}
+                        <span class="card-img-top p-3"></span>
+                        {% endif %}
+                        <div class="card-body">
+                            <h3 class="card-title">{{ artist.artist_name }}</h3>
+                            <span class="fs-5">Click for biography <i class="bi bi-arrow-clockwise"></i></span>
+                        </div>
+                        <div class="card-footer">
+                              
+                        </div>
+                    </div>
+                    <div class="card flip-card-back">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ artist.artist_name }}</h3>
+                            <div class="lineup-bio-text">
+                                {{ artist.artist_bio }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% else %}
+    <div class="container mt-5" id="team-empty">
+        <h2>Teambuilding in progress</h2>
+        <p class="fs-5 mt-3">We haven't added details of our team members yet.</p>         
+    </div>
+{% endif %}
+
+{% endblock %}

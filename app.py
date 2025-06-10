@@ -238,6 +238,17 @@ def lineup():
     )
 
 
+@app.route("/team")
+def team():
+
+    team = list(mongo.db.artists.find({"archived": False, "team_member": "on"}))
+    print(team)
+
+    return render_template(
+            "team.html",
+            team=team,
+    )
+
 @app.route("/schedule")
 def schedule():
 
