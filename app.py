@@ -638,6 +638,7 @@ def add_artist():
 
             artist = {
                 "artist_name": request.form.get("artist_name"),
+                "team_member": request.form.get("team_member"),
                 "artist_schedule_only": request.form.get("artist_schedule_only"),
                 "artist_bio": request.form.get("artist_bio"),
                 "artist_url": request.form.get("artist_url"),
@@ -700,6 +701,7 @@ def edit_artist(artist_id):
             edited_artist = {
                 "$set": {
                     "artist_name": request.form.get("artist_name"),
+                    "team_member": request.form.get("team_member"),
                     "artist_schedule_only": request.form.get("artist_schedule_only"),
                     "artist_bio": request.form.get("artist_bio"),
                     "artist_url": request.form.get("artist_url"),
