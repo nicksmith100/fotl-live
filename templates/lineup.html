@@ -60,7 +60,7 @@
     <h2>Artists</h2>
 
     <div class="row">
-        {% for artist in artists if not artist.artist_schedule_only %}
+        {% for artist in artists if not artist.artist_schedule_only and not artist.team_member %}
             <div class="col-12 col-sm-6 col-lg-6">
                 <a href="#{{ artist.artist_name | replace(' ','') }}" class="link-dark">{{ artist.artist_name }}</a>
             </div>
@@ -68,7 +68,7 @@
     </div>
 
         <div class="row masonry-row mt-4" >
-        {% for artist in artists if not artist.artist_schedule_only %}
+        {% for artist in artists if not artist.artist_schedule_only and not artist.team_member %}
             
             <div id="{{ artist.artist_name | replace(' ','') }}" class="flip-card my-3 col-12 col-sm-6 col-lg-4">
                 <div class="flip-card-inner">    
