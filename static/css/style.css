@@ -131,9 +131,12 @@ h2, h3, h4 {
     color: #F9F9FA;
 }
 
+.card-body-team {
+        border-radius: 0 0 5px 5px;
+}
+
 .artist-bio {
     background: #F9F9FA;
-    
 }
 
 .artist-bio .card-body {
