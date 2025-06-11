@@ -38,9 +38,15 @@ $(document).ready(function(){
         minDate: "01-07-2022",
     });
 
-    /* Event listener for flip-card function */
+    /* Event listeners for flip-card function */
 
     $("#lineup-bios").on("click", ".flip-card", function(e) {
+        if($(e.target).is("a")) {
+            return true;
+        } else { this.classList.toggle("flipped"); }
+    });
+
+    $("#team-bios").on("click", ".flip-card", function(e) {
         if($(e.target).is("a")) {
             return true;
         } else { this.classList.toggle("flipped"); }
@@ -58,92 +64,94 @@ $(document).ready(function(){
         $grid.masonry('layout');
       });
     
-        const countdownDiv = document.getElementById("countdown");
-        const nowNextDiv = document.getElementById("now-next");
-        const eventStartDate = new Date(event_start_rev);
+    /* Countdown function */
 
-      
-        function updateCountdown() {
-            let now = new Date();
-            let nowCalc = new Date();
-            
-            // Lines below allow testing of now and next ahead of time
-            // now.setDate(now.getDate() + 4);
-            // nowCalc.setDate(nowCalc.getDate() + 4);
-       
-        const diff = eventStartDate - now;
-              
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      
-        if (diff < 0) {
-         
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            now = now.toISOString();
-                    
-            let stages = {};
-            for (let showtime of festivalData) {
-            let stage = showtime.showtime_stage;
-            if (!stages[stage]) {
-                stages[stage] = [];
-            }
-            stages[stage].push(showtime);
-            }
+    const countdownDiv = document.getElementById("countdown");
+    const nowNextDiv = document.getElementById("now-next");
+    const eventStartDate = new Date(event_start_rev);
+
+    
+    function updateCountdown() {
+        let now = new Date();
+        let nowCalc = new Date();
         
-            for (let [stage, shows] of Object.entries(stages)) {
-            let nowShows = shows.filter(show => now >= show.showtime_start && now < show.showtime_end);
-            let nextShow = shows.find(show => now < show.showtime_start);
-        
-            let nowElement = document.getElementById(`now-${stage}`);
-            let nextElement = document.getElementById(`next-${stage}`);
-        
-            if (nowShows.length > 0) {
-                let nowShow = nowShows[0];
-                let endShow = new Date (nowShow.showtime_end);
-                let timeRemain = Math.floor((endShow - nowCalc) / (1000 * 60)) + 1;
-                nowElement.innerHTML = `<strong>Now:</strong> ${nowShow.showtime_artist} <small>(${timeRemain} min left)</small>`;
-            } else {
-                nowElement.innerHTML = `<strong>Now:</strong> <span class="text-muted">Break</span>`;
-            }
-        
-            if (nextShow) {
-                let startShow = new Date (nextShow.showtime_start);
-                let hoursUntil = Math.floor(((startShow - nowCalc) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                let minsUntil = Math.floor(((startShow - nowCalc) % (1000 * 60 * 60)) / (1000 * 60)) + 1;
-                let timeUntil = "";
-                if (hoursUntil < 1) {
-                    timeUntil = minsUntil + " min";
-                } else if (hoursUntil == 1 && minsUntil == 0) {
-                    timeUntil = "1 hour";
-                } else if (hoursUntil == 1 && minsUntil > 0) {
-                    timeUntil = "1 hour, " + minsUntil + "min";
-                } else if (hoursUntil > 1 && minsUntil == 0) {
-                    timeUntil = hoursUntil + " hours";
-                } else {
-                    timeUntil = hoursUntil + " hours, " + minsUntil + " min";
-                }
-                nextElement.innerHTML = `<strong>Next:</strong> ${nextShow.showtime_artist} <small>(in ${timeUntil})</small>`;
-            } else {
-                nextElement.innerHTML = `<strong>Next:</strong> <span class="text-muted">No upcoming performances</span>`;
-            }
-            }
-        
-            countdownDiv.classList.add("hidden");
-            nowNextDiv.classList.remove("hidden");
-      
+        // Lines below allow testing of now and next ahead of time
+        // now.setDate(now.getDate() + 4);
+        // nowCalc.setDate(nowCalc.getDate() + 4);
+    
+    const diff = eventStartDate - now;
+          
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (diff < 0) {
+     
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        now = now.toISOString();
+                
+        let stages = {};
+        for (let showtime of festivalData) {
+        let stage = showtime.showtime_stage;
+        if (!stages[stage]) {
+            stages[stage] = [];
+        }
+        stages[stage].push(showtime);
+        }
+    
+        for (let [stage, shows] of Object.entries(stages)) {
+        let nowShows = shows.filter(show => now >= show.showtime_start && now < show.showtime_end);
+        let nextShow = shows.find(show => now < show.showtime_start);
+    
+        let nowElement = document.getElementById(`now-${stage}`);
+        let nextElement = document.getElementById(`next-${stage}`);
+    
+        if (nowShows.length > 0) {
+            let nowShow = nowShows[0];
+            let endShow = new Date (nowShow.showtime_end);
+            let timeRemain = Math.floor((endShow - nowCalc) / (1000 * 60)) + 1;
+            nowElement.innerHTML = `<strong>Now:</strong> ${nowShow.showtime_artist} <small>(${timeRemain} min left)</small>`;
         } else {
-      
-        countdownDiv.innerHTML = `
-        <h2 class="mt-2">The Final Countdown!</h2>
-        <p>There are just <strong>${days} days, ${hours} hours and ${minutes} minutes</strong> left until FotL... We can't wait to see you again!</p>`; 
-       
-        nowNextDiv.hidden = true;
-      
+            nowElement.innerHTML = `<strong>Now:</strong> <span class="text-muted">Break</span>`;
+        }
+    
+        if (nextShow) {
+            let startShow = new Date (nextShow.showtime_start);
+            let hoursUntil = Math.floor(((startShow - nowCalc) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minsUntil = Math.floor(((startShow - nowCalc) % (1000 * 60 * 60)) / (1000 * 60)) + 1;
+            let timeUntil = "";
+            if (hoursUntil < 1) {
+                timeUntil = minsUntil + " min";
+            } else if (hoursUntil == 1 && minsUntil == 0) {
+                timeUntil = "1 hour";
+            } else if (hoursUntil == 1 && minsUntil > 0) {
+                timeUntil = "1 hour, " + minsUntil + "min";
+            } else if (hoursUntil > 1 && minsUntil == 0) {
+                timeUntil = hoursUntil + " hours";
+            } else {
+                timeUntil = hoursUntil + " hours, " + minsUntil + " min";
+            }
+            nextElement.innerHTML = `<strong>Next:</strong> ${nextShow.showtime_artist} <small>(in ${timeUntil})</small>`;
+        } else {
+            nextElement.innerHTML = `<strong>Next:</strong> <span class="text-muted">No upcoming performances</span>`;
         }
         }
-      
-        updateCountdown();
-        setInterval(updateCountdown, 10000);
+    
+        countdownDiv.classList.add("hidden");
+        nowNextDiv.classList.remove("hidden");
+    
+    } else {
+    
+    countdownDiv.innerHTML = `
+    <h2 class="mt-2">The Final Countdown!</h2>
+    <p>There are just <strong>${days} days, ${hours} hours and ${minutes} minutes</strong> left until FotL... We can't wait to see you again!</p>`; 
+    
+    nowNextDiv.hidden = true;
+    
+    }
+    }
+    
+    updateCountdown();
+    setInterval(updateCountdown, 10000);
 
 });
