@@ -80,8 +80,8 @@ $(document).ready(function(){
         let nowCalc = new Date();
         
         // Lines below allow testing of now and next ahead of time
-        now.setDate(now.getDate() + 25);
-        nowCalc.setDate(nowCalc.getDate() + 25);
+        // now.setDate(now.getDate() + 25);
+        // nowCalc.setDate(nowCalc.getDate() + 25);
     
     const diff = eventStartDate - now;
           
