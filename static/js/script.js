@@ -28,13 +28,16 @@ $(document).ready(function(){
 
     $(".showtime").flatpickr({
         enableTime: true,
+        time_24hr: true,
         dateFormat: "d-m-Y H:i",
         minDate: event_start,
         maxDate: event_end
     });
 
     $(".event-date").flatpickr({
-        dateFormat: "d-m-Y",
+        enableTime: true,
+        time_24hr: true,
+        dateFormat: "d-m-Y H:i",
         minDate: "01-07-2022",
     });
 
@@ -69,6 +72,7 @@ $(document).ready(function(){
     const countdownDiv = document.getElementById("countdown");
     const nowNextDiv = document.getElementById("now-next");
     const eventStartDate = new Date(event_start_rev);
+    eventStartDate.setMinutes(eventStartDate.getMinutes() + 1);
 
     
     function updateCountdown() {

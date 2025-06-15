@@ -57,16 +57,6 @@ def ds_to_dt(date_string):
         return datetime.strptime("01-01-1900", "%d-%m-%Y")
 
 
-# Convert date string to date object
-# Set date 01-01-1900 if not provided
-def ds_to_date(date_string):
-
-    if date_string != "":
-        return datetime.strptime((date_string), "%d-%m-%Y")
-    else:
-        return datetime.strptime("01-01-1900", "%d-%m-%Y")
-
-
 # Main application -----------------------------------------------------------
 
 # Inject content for base template
@@ -508,8 +498,8 @@ def key_info():
             date = now.strftime("%d-%m-%Y")
 
             # Convert date strings to datetime objects
-            event_start = ds_to_date(request.form.get("event_start"))
-            event_end = ds_to_date(request.form.get("event_end"))
+            event_start = ds_to_dt(request.form.get("event_start"))
+            event_end = ds_to_dt(request.form.get("event_end"))
 
             # Convert comma separated string to list with no spaces
             stages_list = request.form.get(
