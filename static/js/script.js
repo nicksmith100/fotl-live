@@ -80,8 +80,8 @@ $(document).ready(function(){
         let nowCalc = new Date();
         
         // Lines below allow testing of now and next ahead of time
-        // now.setDate(now.getDate() + 4);
-        // nowCalc.setDate(nowCalc.getDate() + 4);
+        now.setDate(now.getDate() + 25);
+        nowCalc.setDate(nowCalc.getDate() + 25);
     
     const diff = eventStartDate - now;
           
@@ -93,7 +93,7 @@ $(document).ready(function(){
      
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         now = now.toISOString();
-                
+
         let stages = {};
         for (let showtime of festivalData) {
         let stage = showtime.showtime_stage;
@@ -109,35 +109,39 @@ $(document).ready(function(){
     
         let nowElement = document.getElementById(`now-${stage}`);
         let nextElement = document.getElementById(`next-${stage}`);
-    
-        if (nowShows.length > 0) {
-            let nowShow = nowShows[0];
-            let endShow = new Date (nowShow.showtime_end);
-            let timeRemain = Math.floor((endShow - nowCalc) / (1000 * 60)) + 1;
-            nowElement.innerHTML = `<strong>Now:</strong> ${nowShow.showtime_artist} <small>(${timeRemain} min left)</small>`;
-        } else {
-            nowElement.innerHTML = `<strong>Now:</strong> <span class="text-muted">Break</span>`;
-        }
-    
-        if (nextShow) {
-            let startShow = new Date (nextShow.showtime_start);
-            let hoursUntil = Math.floor(((startShow - nowCalc) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let minsUntil = Math.floor(((startShow - nowCalc) % (1000 * 60 * 60)) / (1000 * 60)) + 1;
-            let timeUntil = "";
-            if (hoursUntil < 1) {
-                timeUntil = minsUntil + " min";
-            } else if (hoursUntil == 1 && minsUntil == 0) {
-                timeUntil = "1 hour";
-            } else if (hoursUntil == 1 && minsUntil > 0) {
-                timeUntil = "1 hour, " + minsUntil + "min";
-            } else if (hoursUntil > 1 && minsUntil == 0) {
-                timeUntil = hoursUntil + " hours";
+
+        if (nowElement) {
+            if (nowShows.length > 0) {
+                let nowShow = nowShows[0];
+                let endShow = new Date (nowShow.showtime_end);
+                let timeRemain = Math.floor((endShow - nowCalc) / (1000 * 60)) + 1;
+                nowElement.innerHTML = `<strong>Now:</strong> ${nowShow.showtime_artist} <small>(${timeRemain} min left)</small>`;
             } else {
-                timeUntil = hoursUntil + " hours, " + minsUntil + " min";
+                nowElement.innerHTML = `<strong>Now:</strong> <span class="text-muted">Break</span>`;
             }
-            nextElement.innerHTML = `<strong>Next:</strong> ${nextShow.showtime_artist} <small>(in ${timeUntil})</small>`;
-        } else {
-            nextElement.innerHTML = `<strong>Next:</strong> <span class="text-muted">No upcoming performances</span>`;
+        }
+
+        if (nextElement) {
+            if (nextShow) {
+                let startShow = new Date (nextShow.showtime_start);
+                let hoursUntil = Math.floor(((startShow - nowCalc) % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minsUntil = Math.floor(((startShow - nowCalc) % (1000 * 60 * 60)) / (1000 * 60)) + 1;
+                let timeUntil = "";
+                if (hoursUntil < 1) {
+                    timeUntil = minsUntil + " min";
+                } else if (hoursUntil == 1 && minsUntil == 0) {
+                    timeUntil = "1 hour";
+                } else if (hoursUntil == 1 && minsUntil > 0) {
+                    timeUntil = "1 hour, " + minsUntil + "min";
+                } else if (hoursUntil > 1 && minsUntil == 0) {
+                    timeUntil = hoursUntil + " hours";
+                } else {
+                    timeUntil = hoursUntil + " hours, " + minsUntil + " min";
+                }
+                nextElement.innerHTML = `<strong>Next:</strong> ${nextShow.showtime_artist} <small>(in ${timeUntil})</small>`;
+            } else {
+                nextElement.innerHTML = `<strong>Next:</strong> <span class="text-muted">No upcoming performances</span>`;
+            }
         }
         }
     
