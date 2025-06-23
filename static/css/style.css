@@ -73,6 +73,19 @@ h2, h3, h4 {
     position: relative;
 }
 
+/* Back to top button */
+
+.btt-button {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+}
+
+.btt-link {
+    color: #022832;
+    cursor: pointer;
+}
+
 /* Fade-in effect from: https://blog.hubspot.com/website/css-fade-in */
 
 .primary-image {

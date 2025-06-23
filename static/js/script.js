@@ -162,4 +162,11 @@ $(document).ready(function(){
     updateCountdown();
     setInterval(updateCountdown, 10000);
 
+    
+    /* Back-to-top button */
+    $('.btt-link').click(function(e) {
+        e.preventDefault(); // Prevent default anchor behavior
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Smooth scroll to top
+    });
+
 });
